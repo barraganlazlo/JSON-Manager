@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <base target="_top">
+    <style>
+        textarea {
+            width: 100%;
+            margin: 0;
+        }
+        
+        .param-list {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            padding-left: 10px;
+        }
+        
+        .bttn-array {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <!--HEADER-->
+        <div class="block">
+            <h3>Parametters :</h3>
+            <ul class="param-list">
+                <li>FrozenLines are considered as attribute names</li>
+                <li>Columns where data is converted in an array :
+                    <ul>
+                        <li>
+                            <label for="columnArrayId">Column Id : </label>
+                            <input id="columnArrayId" type="text" onkeyup="">
+                        </li>
+                        <li>
+                            <button id="bttn-setColumnArray" class="share bttn-array" type="button"> SET </button>
+                            <button id="bttn-deleteColumnArray" class="create bttn-array" type="button"> DELETE </button>
+                        </li>
+                        <li>
+                            Current Column as array : <span id="column-array-list"></span>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!--CONTENT-->
+        <div class="block">
+            <label for="JSON-preview">
+          <b>JSON Preview :</b>
+        </label>
+            <textarea id="JSON-preview" readonly rows="15"><?!= convertToJSON(); ?></textarea>
+        </div>
+
+        <!--FOOTER-->
+        <div class="block">
+            <button id="bttn-update" class="action" type="button"> Update </button>
+            <button id="bttn-download" class="action" type="button"> Download </button>
+            <button id="bttn-copy" class="action" type="button"> Copy </button>
+        </div>
+    </div>
+    <script></script>
+</body>
+
+</html>

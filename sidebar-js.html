@@ -1,0 +1,51 @@
+<script>
+    console.log("o");
+    var json;
+    var columnArray = new Array();
+    $("#bttn-copy").click(copy);
+    $("#bttn-download").click(download);
+    $("#bttn-update").click(update);
+    $("#bttn-setColumnArray").click(setColumnArray);
+    $("#bttn-deleteColumnArray").click(deleteColumnArray);
+    $("#columnArrayId").keyup(lettersOnly);
+
+    function copy() {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($("#JSON-preview").text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+    }
+
+    function download() {
+        update();
+        var element = document.createElement('a');
+    }
+
+    function update() {
+        json = google.script.run.convertToJSON();
+        $("#JSON-preview").text(json);
+    }
+
+    function setColumnArray() {
+        columnArray.push($("#columnArrayId").text().toUpperCase());
+        $("#column-array-list").text(columnArray.join(","));
+        console.log("u");
+    }
+
+    function deleteColumnArray() {
+        var id = $("#columnArrayId").text().toUpperCase();
+        columnArray.foreach(function(el, i) {
+            if (el == id) {
+                columnArray.split(i, 1);
+                i--;
+            }
+        });
+    }
+
+    function lettersOnly(input) {
+        var regex = /[^a-z]/gi;
+        input.value.replace(regex, "");
+        console.log("y");
+    }
+</script>
