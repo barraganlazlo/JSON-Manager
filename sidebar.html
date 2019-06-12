@@ -4,24 +4,10 @@
 <head>
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <base target="_top">
-    <style>
-        textarea {
-            width: 100%;
-            margin: 0;
-        }
-        
-        .param-list {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            padding-left: 10px;
-        }
-        
-        .bttn-array {
-            margin-top: 5px;
-        }
-    </style>
+    <?!= include('sidebar-js'); ?>
+        <?!= include('sidebar-css'); ?>
+
+            <base target="_top">
 </head>
 
 <body>
@@ -42,7 +28,7 @@
                             <button id="bttn-deleteColumnArray" class="create bttn-array" type="button"> DELETE </button>
                         </li>
                         <li>
-                            Current Column as array : <span id="column-array-list"></span>
+                            Current Columns as array : <span id="column-array-list"></span>
                         </li>
                     </ul>
                 </li>
@@ -64,7 +50,6 @@
             <button id="bttn-copy" class="action" type="button"> Copy </button>
         </div>
     </div>
-    <script></script>
 </body>
 
 </html>

@@ -1,3 +1,6 @@
+var documentProperties = PropertiesService.getDocumentProperties();
+
+
 function onInstall(e) {
     onOpen(e);
 }
@@ -10,6 +13,7 @@ function onOpen(e) {
 }
 
 function convertToJSON() {
+    var columnArray = documentProperties.getProperty("columnArray");
     var sheet = SpreadsheetApp.getActiveSheet();
     var nbFrozen = sheet.getFrozenRows();
     var data = sheet.getDataRange().getValues();
@@ -64,7 +68,37 @@ function convertToJSON() {
         json += '}';
     }
     json += ']';
+    Logger.log(json);
     return json;
+}
+
+function getColumnArray() {
+    return documentProperties.getProperty("columnArray");
+}
+
+function setColumnArray(array) {
+    return documentProperties.setProperty({ columnArray: array });
+}
+
+function addColumnArray(columnId) {
+    var columnArray = documentProperties.getProperty("columnArray");
+    if (columnArray == null) {
+        columnArray = new Array();
+    }
+    if (!columnArray.includes(columnId)) {
+        columnArray.push(columnId);
+    }
+    setColumnArray(columnArray);
+
+}
+
+function removeColumnArray(columnId) {
+    var columnArray = documentProperties.getProperty("columnArray");
+    if (!columnArray) {
+        columnArray = new Array();
+    }
+    columnArray = columnArray.filter(el => el != columnId);
+    setColumnArray(columnArray);
 }
 
 function download() {
@@ -72,6 +106,11 @@ function download() {
 }
 
 function openSideBar() {
-    var html = HtmlService.createTemplateFromFile('JSON').evaluate().setTitle("JSON Manager");
+    var html = HtmlService.createTemplateFromFile('sidebar').evaluate().setTitle("JSON Manager");
     SpreadsheetApp.getUi().showSidebar(html);
+}
+
+function include(filename) {
+    return HtmlService.createHtmlOutputFromFile(filename)
+        .getContent();
 }

@@ -1,51 +1,65 @@
 <script>
-    console.log("o");
     var json;
     var columnArray = new Array();
-    $("#bttn-copy").click(copy);
-    $("#bttn-download").click(download);
-    $("#bttn-update").click(update);
-    $("#bttn-setColumnArray").click(setColumnArray);
-    $("#bttn-deleteColumnArray").click(deleteColumnArray);
-    $("#columnArrayId").keyup(lettersOnly);
+    $(document).ready(function() {
+        $("#bttn-copy").click(copy);
+        $("#bttn-download").click(download);
+        $("#bttn-update").click(update);
+        $("#bttn-setColumnArray").click(setColumnArray);
+        $("#bttn-deleteColumnArray").click(deleteColumnArray);
+        $("#columnArrayId").keyup(lettersOnly);
+    });
 
     function copy() {
+        console.log("copy");
         var $temp = $("<input>");
         $("body").append($temp);
         $temp.val($("#JSON-preview").text()).select();
         document.execCommand("copy");
         $temp.remove();
+        console.log($("#JSON-preview").text());
     }
 
     function download() {
+        console.log("download");
         update();
-        var element = document.createElement('a');
     }
 
     function update() {
-        json = google.script.run.convertToJSON();
+        console.log("updating")
+        google.script.run.withSuccessHandler(onUpdate).convertToJSON(columnArray);
+    }
+
+    function onUpdate(data) {
+        json = data;
         $("#JSON-preview").text(json);
+        console.log("updated");
     }
 
     function setColumnArray() {
-        columnArray.push($("#columnArrayId").text().toUpperCase());
+        console.log("set Column Array");
+        var columnId = $("#columnArrayId").val().toUpperCase();
+        var alreadyInArray = false;
+        if (!columnArray.includes(columnId)) {
+            columnArray.push(columnId);
+        }
         $("#column-array-list").text(columnArray.join(","));
-        console.log("u");
+        console.log(columnArray);
     }
 
     function deleteColumnArray() {
-        var id = $("#columnArrayId").text().toUpperCase();
-        columnArray.foreach(function(el, i) {
-            if (el == id) {
-                columnArray.split(i, 1);
-                i--;
-            }
-        });
+        console.log("delete Column Array");
+        var columnId = $("#columnArrayId").val().toUpperCase();
+        columnArray = columnArray.filter(el => el != columnId);
+        $("#column-array-list").text(columnArray.join(","));
+        console.log(columnArray);
     }
 
-    function lettersOnly(input) {
-        var regex = /[^a-z]/gi;
-        input.value.replace(regex, "");
-        console.log("y");
+    function lettersOnly() {
+        var textletters = $("#columnArrayId").val();
+        console.log("before : " + JSON.stringify(textletters));
+        textletters = textletters.replace(/[^a-z]/gi, "");
+        console.log("after : " + JSON.stringify(textletters));
+        $("#columnArrayId").val(textletters);
     }
 </script>
