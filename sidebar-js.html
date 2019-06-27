@@ -1,12 +1,10 @@
 <script>
-    var json;
-    var columnArray = new Array();
     $(document).ready(function() {
         $("#bttn-copy").click(copy);
         $("#bttn-download").click(download);
-        $("#bttn-update").click(update);
-        $("#bttn-setColumnArray").click(setColumnArray);
-        $("#bttn-deleteColumnArray").click(deleteColumnArray);
+        $("#bttn-update").click(updateJSON);
+        $("#bttn-setColumnArray").click(addColumnArray);
+        $("#bttn-deleteColumnArray").click(removeColumnArray);
         $("#columnArrayId").keyup(lettersOnly);
     });
 
@@ -22,37 +20,47 @@
 
     function download() {
         console.log("download");
-        update();
+        updateJSON();
     }
 
-    function update() {
+    function updateJSON() {
         console.log("updating")
-        google.script.run.withSuccessHandler(onUpdate).convertToJSON(columnArray);
+        google.script.run.withSuccessHandler(onUpdateJSON).convertToJSON();
     }
 
-    function onUpdate(data) {
-        json = data;
+    function onUpdateJSON(json) {
         $("#JSON-preview").text(json);
         console.log("updated");
     }
 
-    function setColumnArray() {
-        console.log("set Column Array");
+    function addColumnArray() {
         var columnId = $("#columnArrayId").val().toUpperCase();
-        var alreadyInArray = false;
-        if (!columnArray.includes(columnId)) {
-            columnArray.push(columnId);
+        if (columnId == null || columnId == "") {
+            return;
         }
-        $("#column-array-list").text(columnArray.join(","));
-        console.log(columnArray);
+        console.log("adding Column Array : " + columnId);
+        google.script.run.withSuccessHandler(updateColumnArray).addColumnArray(columnId);
     }
 
-    function deleteColumnArray() {
-        console.log("delete Column Array");
+    function updateColumnArray(newArray) {
+        console.log("updating Column Array ");
+        console.log(newArray);
+        if (newArray != null && newArray != "") {
+            $("#column-array-list").text(newArray.join(","));
+        } else {
+            $("#column-array-list").text("");
+        }
+        console.log("Column Array updated : " + newArray);
+        updateJSON();
+    }
+
+    function removeColumnArray() {
         var columnId = $("#columnArrayId").val().toUpperCase();
-        columnArray = columnArray.filter(el => el != columnId);
-        $("#column-array-list").text(columnArray.join(","));
-        console.log(columnArray);
+        if (columnId == null || columnId == "") {
+            return;
+        }
+        console.log("delete Column Array : " + columnId);
+        google.script.run.withSuccessHandler(updateColumnArray).removeColumnArray(columnId);
     }
 
     function lettersOnly() {

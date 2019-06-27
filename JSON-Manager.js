@@ -1,6 +1,3 @@
-var documentProperties = PropertiesService.getDocumentProperties();
-
-
 function onInstall(e) {
     onOpen(e);
 }
@@ -13,14 +10,14 @@ function onOpen(e) {
 }
 
 function convertToJSON() {
-    var columnArray = documentProperties.getProperty("columnArray");
+    var columnArray = getColumnArray();
     var sheet = SpreadsheetApp.getActiveSheet();
     var nbFrozen = sheet.getFrozenRows();
     var data = sheet.getDataRange().getValues();
     var nbColumns = data[nbFrozen - 1].length;
     var json = '[';
     var names = new Array(nbColumns);
-    Logger.log(JSON.stringify(data[1][0]));
+    console.log(JSON.stringify(data[1][0]));
     var ts = "";
     for (var i = 0; i < nbFrozen; i++) {
         var lastname = null;
@@ -43,7 +40,7 @@ function convertToJSON() {
             lastname = name;
         }
     }
-    Logger.log(names);
+    console.log(names);
     for (var i = nbFrozen; i < data.length; i++) {
         if (i > nbFrozen) {
             json += ',';
@@ -51,15 +48,22 @@ function convertToJSON() {
         json += '{';
         for (var j = 0; j < nbColumns; j++) {
             var value = data[i][j];
-            if (value) {
-
-            }
             if (names[j] != null && names[j] != "") {
                 if (names[j] == '}') {
                     json += names[j]
                 } else {
                     if (j > 0) {
                         json += ",";
+                    }
+                    //arrays
+                    if (columnArray.indexOf(numberToLetter(j)) > -1) { //=includes
+                        if (value && value != "") {
+                            value = value.replace(/\s/g, '');
+                            value = value.split(",");
+                            console.log(value);
+                        } else {
+                            velue = null;
+                        }
                     }
                     json += names[j] + ' : ' + JSON.stringify(value);
                 }
@@ -68,41 +72,45 @@ function convertToJSON() {
         json += '}';
     }
     json += ']';
-    Logger.log(json);
+    console.log(json);
     return json;
 }
 
 function getColumnArray() {
-    return documentProperties.getProperty("columnArray");
+    return JSON.parse(PropertiesService.getDocumentProperties().getProperty("columnArray"));
 }
 
 function setColumnArray(array) {
-    return documentProperties.setProperty({ columnArray: array });
+    return PropertiesService.getDocumentProperties().setProperties({ "columnArray": JSON.stringify(array) });
 }
 
 function addColumnArray(columnId) {
-    var columnArray = documentProperties.getProperty("columnArray");
-    if (columnArray == null) {
-        columnArray = new Array();
+    var columnArray = getColumnArray();
+    console.log(columnArray);
+    if (columnArray == null || !columnArray || columnArray == "") {
+        columnArray = [];
     }
-    if (!columnArray.includes(columnId)) {
+    if (!(columnArray.indexOf(columnId) > -1)) { //=includes(el)
+        console.log(JSON.stringify(columnArray));
         columnArray.push(columnId);
     }
     setColumnArray(columnArray);
-
+    console.log("added column : " + columnId);
+    console.log(columnArray);
+    return getColumnArray();
 }
 
 function removeColumnArray(columnId) {
-    var columnArray = documentProperties.getProperty("columnArray");
-    if (!columnArray) {
-        columnArray = new Array();
+    var columnArray = getColumnArray();
+    console.log(columnArray);
+    if (columnArray == null || !columnArray || columnArray == "") {
+        columnArray = [];
     }
-    columnArray = columnArray.filter(el => el != columnId);
+    columnArray = columnArray.filter(function(el) { return el != columnId });
     setColumnArray(columnArray);
-}
-
-function download() {
-
+    console.log("removed column : " + columnId);
+    console.log(columnArray);
+    return getColumnArray();
 }
 
 function openSideBar() {
@@ -113,4 +121,24 @@ function openSideBar() {
 function include(filename) {
     return HtmlService.createHtmlOutputFromFile(filename)
         .getContent();
+}
+
+function numberToLetter(column) {
+    column = column + 1;
+    var temp, letter = '';
+    while (column > 0) {
+        temp = (column - 1) % 25;
+        letter = String.fromCharCode(temp + 65) + letter;
+        column = (column - temp - 1) / 25;
+    }
+    return letter;
+}
+
+function letterToNumber(letter) {
+    var column = 0,
+        length = letter.length;
+    for (var i = 0; i < length; i++) {
+        column += (letter.charCodeAt(i) - 64) * Math.pow(25, length - i - 1);
+    }
+    return column - 1;
 }
